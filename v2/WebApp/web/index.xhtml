@@ -1,0 +1,483 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Dash Board</title>
+        <h:outputStylesheet name="css/dashboard.css"/>
+<!--        <h:outputScript name="js/jquery-3.2.1.min.js"/>-->
+        <h:outputScript name="js/highcharts.js"/>
+    </h:head>
+    <h:body>
+        
+        <div class="container">
+            <div class="header"> <h:graphicImage name="images/icon.png" class="prime"/> <div class="DSD11">DSD11</div></div>
+            <div class="title">
+                <div class="bigTitle">DashBoard</div>
+                <div class="smallTitle">Summary of Log </div>
+            </div>
+            <div class ="content">
+                <div class="summary_log">
+                    <div class="search">
+                        <h:form id="search-util">
+                            <p:growl id="msgs" showDetail="false" class="true" />
+                            <p:inputText id="search" placeholder="XXX.XXX.XXX.XXX" value="#{dashboard.log.userid}" required="true" requiredMessage="Please enter userid" validatorMessage="IP is invalid">
+                                <f:validateRegex pattern="\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b"/>
+                            </p:inputText>
+                            <p:calendar id="effect" value="#{dashboard.log.date}" effect="fold" pattern="MM/dd/yyyy HH:mm:ss" placeholder="Date" required="true" requiredMessage="Please enter date" showButtonPanel="true" navigator="true">
+                            </p:calendar>
+                            <p:commandButton value="SEARCH" class="btn_search" update="msgs" actionListener="#{dashboard.displayService()}" />
+                        </h:form>
+                    </div>
+                    <div class="summary_content">
+                        <div class="log">
+                            <div class="image">
+                                <h:graphicImage name="images/info.png"/>
+                            </div>
+                            <div class="content_log">
+                                <h:form id="EPS_info">
+                                    <div class="EPS">
+                                        <h:outputText id="txt_EPS_info" value="EPS: #{dashboard.getEPS('SERVER1')}"/>
+                                        <p:poll interval="1" listener="#{dashboard.getEPS('SERVER1')}" update="txt_EPS_info" />
+                                    </div>
+                                    <div class="Total">
+                                        <h:outputText id="total_info" value="Total: #{dashboard.getTotal('INFO')}"/>
+                                        <p:poll interval="1" listener="#{dashboard.getTotal('INFO')}" update="total_info" />
+                                    </div>
+                                </h:form>
+                            </div>
+                        </div>
+                        <div class="title_info">INFO</div>
+                    </div>
+                    <div class="summary_content">
+                        <div class="log">
+                            <div class="image">
+                                <h:graphicImage name="images/warning.png"/>
+                            </div>
+                            <div class="content_log">
+                                <h:form id="EPS_warning">
+                                    <div class="EPS">
+                                        <h:outputText id="txt_EPS_warning" value="EPS: #{dashboard.getEPS('SERVER2')}"/>
+                                        <p:poll interval="1" listener="#{dashboard.getEPS('SERVER2')}" update="txt_EPS_warning" />
+                                    </div>
+                                    <div class="Total">
+                                        <h:outputText id="total_warning" value="Total: #{dashboard.getTotal('DEBUG')}"/>
+                                        <p:poll interval="1" listener="#{dashboard.getTotal('DEBUG')}" update="total_warning" />
+                                    </div>
+                                </h:form>
+                            </div>
+                        </div>
+                        <div class="title_warning">WARNING</div>
+                    </div>
+                    <div class="summary_content">
+                        <div class="log">
+                            <div class="image">
+                                <h:graphicImage name="images/error.png"/>
+                            </div>
+                            <div class="content_log">
+                                <h:form id="EPS_error"> 
+                                    <div class="EPS">
+                                        <h:outputText id="txt_EPS_error" value="EPS: #{dashboard.getEPS('SERVER3')}"/>
+                                        <p:poll interval="1" listener="#{dashboard.getEPS('SERVER3')}" update="txt_EPS_error" />
+                                    </div>
+                                    <div class="Total">
+                                        <h:outputText id="total_error" value="Total: #{dashboard.getTotal('ERROR')}"/>
+                                        <p:poll interval="1" listener="#{dashboard.getTotal('ERROR')}" update="total_error" />
+                                    </div>
+                                </h:form>    
+                            </div>
+                        </div>
+                        <div class="title_error">ERROR</div>
+                    </div>
+                    <div class="summary_content">
+                        <div class="log">
+                            <div class="image">
+                                 <h:graphicImage name="images/total.png"/>
+                            </div>
+                            <div class="content_log">
+                                <h:form id="EPS_total"> 
+                                    <div class="EPS">
+                                        <h:outputText id="txt_EPS_total" value="EPS: #{dashboard.getEPS('TOTAL')}"/>
+                                        <p:poll interval="1" listener="#{dashboard.getEPS('TOTAL')}" update="txt_EPS_total" />
+                                    </div>
+                                    <div class="Total">
+                                        <h:outputText id="total_summary" value="Total: #{dashboard.getTotal('TOTAL')}"/>
+                                        <p:poll interval="1" listener="#{dashboard.getTotal('TOTAL')}" update="total_summary" />
+                                    </div>
+                                </h:form>   
+                            </div>
+                        </div>
+                        <div class="title_total">TOTAL</div>
+                    </div>
+                </div>
+                <div class="chart">
+                    <div class="EPS_chart">
+                        <div class="info" id="info"></div>
+                        <div class="warning" id="warning"></div>
+                        <div class="error" id="error"></div>
+                    </div>
+                    <div class="Total_chart">
+                        <div class="Total_column" id="chart_column"/>
+                        <div class="Total_pie" id="chart_pie"/>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="text_footer">@2017 DSD11. Inc. All rights reserved.</div>
+            </div>
+        </div>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    Highcharts.setOptions({
+                        global: {
+                            useUTC: false
+                        }
+                    });
+
+                    Highcharts.chart('info', {
+                        chart: {
+                            type: 'spline',
+                            animation: Highcharts.svg, // don't animate in old IE
+                            marginRight: 10,
+                            events: {
+                                load: function () {
+
+                                    var series = this.series[0];
+                                    var seriestotal = this.series[1];
+                                    setInterval(function () {
+                                        var x = (new Date()).getTime(), // current time
+                                            y = parseInt(document.getElementById('EPS_info:txt_EPS_info').innerHTML.substring(5)),
+                                            total = parseInt(document.getElementById('EPS_total:txt_EPS_total').innerHTML.substring(5));
+                                        series.addPoint([x, y], true, true);
+                                        seriestotal.addPoint([x, total], true, true);
+                                    }, 1000);
+                                }
+                            }
+                        },
+                        title: {
+                            text: 'EPS SERVER1'
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            tickPixelInterval: 150
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'Value'
+                            },
+                            plotLines: [{
+                                value: 0,
+                                width: 1,
+                                color: '#808080'
+                            }]
+                        },
+                        tooltip: {
+                            formatter: function () {
+                                return '<b>' + this.series.name + '</b><br/>' +
+                                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                                    Highcharts.numberFormat(this.y, 2);
+                            }
+                        },
+                        legend: {
+                            enabled: true
+                        },
+                        exporting: {
+                            enabled: false
+                        },
+                        series: [
+                            {
+                                name: 'Server1',
+                                data: [10000,20000,30000,10000,20000,25000]
+                            },
+                            {
+                                name: 'Total',
+                                data: [10000,20000,30000,10000,20000,25000],
+                                color: '#4EA64B'
+                            }
+                        ]
+                    });
+                }); 
+            </script>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    Highcharts.setOptions({
+                        global: {
+                            useUTC: false
+                        }
+                    });
+
+                    Highcharts.chart('warning', {
+                        chart: {
+                            type: 'spline',
+                            animation: Highcharts.svg, // don't animate in old IE
+                            marginRight: 10,
+                            events: {
+                                load: function () {
+
+                                    // set up the updating of the chart each second
+                                    var series = this.series[0];
+                                    var seriestotal = this.series[1];
+                                    setInterval(function () {
+                                        var x = (new Date()).getTime(), // current time
+                                            y = parseInt(document.getElementById('EPS_warning:txt_EPS_warning').innerHTML.substring(5)),
+                                            total = parseInt(document.getElementById('EPS_total:txt_EPS_total').innerHTML.substring(5));
+                                        series.addPoint([x, y], true, true);
+                                        seriestotal.addPoint([x, total], true, true);
+                                    }, 1000);
+                                }
+                            }
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        title: {
+                            text: 'EPS SERVER2'
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            tickPixelInterval: 150
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'Value'
+                            },
+                            plotLines: [{
+                                value: 0,
+                                width: 1,
+                                color: '#808080'
+                            }]
+                        },
+                        tooltip: {
+                            formatter: function () {
+                                return '<b>' + this.series.name + '</b><br/>' +
+                                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                                    Highcharts.numberFormat(this.y, 2);
+                            }
+                        },
+                        legend: {
+                            enabled: true
+                        },
+                        exporting: {
+                            enabled: false
+                        },
+                        series: [
+                            {
+                                name: 'Server2',
+                                data: [10000,20000,30000,15000,25000,20000],
+                                color: '#EB8063'
+                            },{
+                                name: 'Total',
+                                data: [10000,20000,30000,15000,25000,20000],
+                                color: '#4EA64B'
+                            }
+                        ]
+                    });
+                }); 
+            </script>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    Highcharts.setOptions({
+                        global: {
+                            useUTC: false
+                        }
+                    });
+
+                    Highcharts.chart('error', {
+                        chart: {
+                            type: 'spline',
+                            animation: Highcharts.svg, // don't animate in old IE
+                            marginRight: 10,
+                            events: {
+                                load: function () {
+
+                                    // set up the updating of the chart each second
+                                    var series = this.series[0];
+                                    var seriestotal = this.series[1];
+                                    setInterval(function () {
+                                        var x = (new Date()).getTime(), // current time
+                                            y = parseInt(document.getElementById('EPS_error:txt_EPS_error').innerHTML.substring(5)),
+                                            total = parseInt(document.getElementById('EPS_total:txt_EPS_total').innerHTML.substring(5));
+                                        series.addPoint([x, y], true, true);
+                                        seriestotal.addPoint([x, total], true, true);
+                                    }, 1000);
+                                }
+                            }
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        title: {
+                            text: 'EPS SERVER3'
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            tickPixelInterval: 150
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'Value'
+                            },
+                            plotLines: [{
+                                value: 0,
+                                width: 1,
+                                color: '#808080'
+                            }]
+                        },
+                        tooltip: {
+                            formatter: function () {
+                                return '<b>' + this.series.name + '</b><br/>' +
+                                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                                    Highcharts.numberFormat(this.y, 2);
+                            }
+                        },
+                        legend: {
+                            enabled: true
+                        },
+                        exporting: {
+                            enabled: false
+                        },
+                        series: [{
+                                name: 'Server3',
+                                data: [10000,20000,30000,10000,20000,25000],
+                                color: '#FF0000'
+                            },
+                            {
+                                name: 'Total',
+                                data: [10000,20000,30000,10000,40000,25000],
+                                color: '#4EA64B'
+                            }
+                        ]
+                    });
+                }); 
+            </script>
+            <script type="text/javascript">
+                var chart = Highcharts.chart('chart_column', {
+                    chart: {
+                        type: 'column',
+                        animation: Highcharts.svg,
+                        events:{
+                            load: function(){
+                                setInterval(function(){
+                                    var newData = [ parseInt(document.getElementById('EPS_info:total_info').innerHTML.substring(7)), parseInt(document.getElementById('EPS_warning:total_warning').innerHTML.substring(7)), parseInt(document.getElementById('EPS_error:total_error').innerHTML.substring(7))];
+                                    chart.series[0].setData(newData,true);
+                                    chart.redraw();
+                                },1000);
+                            }
+                        }
+                    },
+                    credits: {
+                                enabled: false
+                            },
+                    title: {
+                        text: 'Browser Log Amount'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        categories: ['INFO','WARNING','ERROR'],
+                        crosshair: true
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Total amount collected log'
+                        }
+
+                    },
+                    legend: {
+                        enabled: true
+                    },
+                    plotOptions: {
+                        series: {
+                            borderWidth: 0,
+                            dataLabels: {
+                                enabled: true,
+                                format: '{point.y:1f}'
+                            }
+                        }
+                    },
+
+                    tooltip: {
+                        headerFormat: '<span style="font-size:11px">{series.name}</span>',
+                        pointFormat: '<span style="color:{point.color}">{point.name}</span>'
+                    },
+
+                    series: [{
+                        name: 'Category Logs',
+                        colorByPoint: true,
+                        data: [{
+                            y: #{dashboard.getTotal('INFO')},
+                        }, {
+                            y: #{dashboard.getTotal('DEBUG')},
+                            color: '#EB8063',
+                        },
+                        {
+                            y: #{dashboard.getTotal('ERROR')},
+                            color: '#FF0000'
+                        }]
+                    }],
+                    });
+            </script>
+            <script type="text/javascript">
+                var chartpie = Highcharts.chart('chart_pie', {
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie',
+                        animation: Highcharts.svg,
+                        events:{
+                            load: function(){
+                                setInterval(function(){
+                                    var newData = [parseInt(document.getElementById('EPS_info:total_info').innerHTML.substring(7)),parseInt(document.getElementById('EPS_warning:total_warning').innerHTML.substring(7)),parseInt(document.getElementById('EPS_error:total_error').innerHTML.substring(7))];
+                                    chartpie.series[0].setData(newData,true);
+                                    chartpie.redraw();
+                                },1000);
+                            }
+                        }
+                    },
+                    credits: {
+                            enabled: false
+                        },
+                    title: {
+                        text: 'Classification Logs'
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: false
+                            },
+                            showInLegend: true
+                        }
+                    },
+                    series: [{
+                        name: 'Category Logs',
+                        colorByPoint: true,
+                        data: [{
+                            name: 'LOG INFO',
+                            y: #{dashboard.getTotal('INFO')}
+                        }, {
+                            name: 'LOG WARNING',
+                            y: #{dashboard.getTotal('DEBUG')},
+                            sliced: true,
+                            selected: true,
+                            color: '#EB8063'
+                        }, {
+                            name: 'LOG ERROR',
+                            y: #{dashboard.getTotal('ERROR')},
+                            color: '#FF0000'
+                        }]
+                    }]
+                });
+            </script>
+    </h:body>
+</html>
+
